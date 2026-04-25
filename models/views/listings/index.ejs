@@ -94,6 +94,7 @@
         justify-content: space-between;
         padding: 0;
         height: auto;
+      }
     }
   </style>
 
@@ -199,7 +200,7 @@
                 </div>
              <% } else { %>
                 <img 
-                  src="<%= (typeof listing.image === 'object' ? listing.image.url : listing.image).replace('/upload', '/upload/w_400,q_auto,f_auto') %>" 
+                  src="<%= listing.image ? (typeof listing.image === 'object' ? listing.image.url : listing.image).replace('/upload', '/upload/w_400,q_auto,f_auto') : 'https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60' %>" 
                   loading="lazy"
                   class="card-img-top"
                   alt="listing image"
@@ -228,7 +229,7 @@
     if (taxSwitch) {
       taxSwitch.addEventListener("click", () => {
         let taxInfo = document.querySelectorAll('.tax-info');
-        for (info of taxInfo) {
+        for (let info of taxInfo) {
           if (info.style.display != "inline") {
             info.style.display = "inline";
           } else {
