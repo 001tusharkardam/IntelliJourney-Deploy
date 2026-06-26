@@ -7,6 +7,28 @@ const UserSchema = new Schema({
   email: {
     type: String,
     required: true
+  },
+  firstName: {
+    type: String,
+    default: ""
+  },
+  lastName: {
+    type: String,
+    default: ""
+  },
+  mobile: {
+    type: String,
+    default: ""
+  },
+  profileImage: {
+    url: {
+      type: String,
+      default: ""
+    },
+    filename: {
+      type: String,
+      default: ""
+    }
   }
 }, { timestamps: true });
 
