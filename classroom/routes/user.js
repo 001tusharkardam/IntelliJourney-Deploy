@@ -3,8 +3,11 @@ const router = express.Router();
 const User = require("../../models/user.js");
 const wrapAsync = require("../../utils/wrapAsync");
 const passport = require("passport");
-const { saveRedirectUrl } = require("../../middleware.js");
+const { saveRedirectUrl, isLoggedIn } = require("../../middleware.js");
 const userController = require("../../controllers/user.js");
+const multer = require("multer");
+const { storage } = require("../../cloudConfig.js");
+const upload = multer({ storage });
 
 router
 .route("/signup")
@@ -21,6 +24,10 @@ router.route("/login")
              }),
               userController.login
             );
+
+router.route("/profile")
+    .get(isLoggedIn, wrapAsync(userController.renderProfileForm))
+    .post(isLoggedIn, upload.single("profileImage"), wrapAsync(userController.updateProfile));
 
 router.get("/logout", userController.logout);
 module.exports = router;
