@@ -1,4 +1,4 @@
-<% if(typeof success !=='undefined' && success && success.length> 0) { %>
+<!-- <% if(typeof success !=='undefined' && success && success.length> 0) { %>
     <div class="alert alert-success alert-dismissible fade show col-6 offset-3" role="alert">
         <%= success %>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -10,4 +10,37 @@
                 <%= error %>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+            <% } %> -->
+
+
+
+
+
+<% if(typeof success !=='undefined' && success && success.length> 0) { %>
+    <div class="alert alert-success fade show col-6 offset-3" role="alert">
+        <%= success %>
+    </div>
+    <% } %>
+
+        <% if(typeof error !=='undefined' && error && error.length> 0) { %>
+            <div class="alert alert-danger fade show col-6 offset-3" role="alert">
+                <%= error %>
+            </div>
             <% } %>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const alerts = document.querySelectorAll(".alert");
+
+                        alerts.forEach(function (alert) {
+                            setTimeout(function () {
+                                alert.style.transition = "opacity 0.5s ease";
+                                alert.style.opacity = "0";
+
+                                setTimeout(function () {
+                                    alert.remove();
+                                }, 500);
+                            }, 5000); // 5 seconds
+                        });
+                    });
+                </script>
