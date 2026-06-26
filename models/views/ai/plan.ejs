@@ -1,99 +1,363 @@
 <% layout("/layouts/boilerplate") %>
-    <div class="row mt-3">
-        <div class="col-8 offset-2">
-            <h3 class="mb-4">Plan Your Dream Trip with AI ✨</h3>
-            <form method="POST" action="/ai/plan" class="needs-validation" novalidate>
-                <div class="mb-3">
-                    <label for="destination" class="form-label">Where do you want to go?</label>
-                    <input type="text" name="destination" class="form-control" required
-                        placeholder="e.g., Kashmir, Paris, Tokyo" value="<%= destination || '' %>">
-                </div>
 
-                <div class="row">
-                    <div class="mb-3 col-md-6">
-                        <label for="source" class="form-label">Starting From (Source)</label>
-                        <input type="text" name="source" class="form-control" required placeholder="e.g., Delhi, Mumbai"
-                            value="<%= source || '' %>">
-                    </div>
-                    <div class="mb-3 col-md-6">
-                        <label for="transport" class="form-label">Preferred Mode of Transport</label>
-                        <select name="transport" class="form-select" required>
-                            <option value="Any (Best Option)">Any (Best Option)</option>
-                            <option value="Train 🚂">Train 🚂</option>
-                            <option value="Bus 🚌">Bus 🚌</option>
-                            <option value="Car/Taxi 🚖">Car/Taxi 🚖</option>
-                            <option value="Bike 🏍️">Bike 🏍️</option>
-                            <option value="Flight ✈️">Flight ✈️</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="mb-3 col-md-6">
-                        <label for="days" class="form-label">Duration (Days)</label>
-                        <input type="number" name="days" class="form-control" required min="1" max="30" value="3">
-                    </div>
-                    <div class="mb-3 col-md-6">
-                        <label for="budget" class="form-label">Budget (per person)</label>
-                        <select name="budget" class="form-select" required>
-                            <option value="₹500 - ₹2,000 (Day Trip/Pocket Friendly)">₹500 - ₹2,000 (Day Trip/Pocket
-                                Friendly)</option>
-                            <option value="₹2,000 - ₹5,000 (Budget Stay)">₹2,000 - ₹5,000 (Budget Stay)</option>
-                            <option value="₹5,000 - ₹10,000 (Standard)" selected>₹5,000 - ₹10,000 (Standard)</option>
-                            <option value="₹10,000 - ₹20,000 (Comfort)">₹10,000 - ₹20,000 (Comfort)</option>
-                            <option value="₹20,000 - ₹50,000 (Premium)">₹20,000 - ₹50,000 (Premium)</option>
-                            <option value="₹50,000 - ₹1,00,000 (Luxury)">₹50,000 - ₹1,00,000 (Luxury)</option>
-                            <option value="₹1,00,000+ (Ultra Luxury)">₹1,00,000+ (Ultra Luxury)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="interests" class="form-label">Interests & Preferences</label>
-                    <input type="text" name="interests" class="form-control" required
-                        placeholder="e.g., Adventure, Local Food, Museums, Relaxing">
-                </div>
-
-                <button class="btn btn-danger w-100">Generate Itinerary</button>
-            </form>
-
-            <% if(plan) { %>
-                <hr class="mt-5 mb-5">
-                <div class="card shadow-lg border-0 mb-5">
-                    <div class="card-header bg-danger text-white">
-                        <h4 class="m-0"><i class="fa-solid fa-plane-departure"></i> Your Trip to <%= destination %>
-                        </h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-text ai-response">
-                            <%- plan %>
+<div class="container-fluid py-2 px-0 px-md-2">
+    <% if(plan) { %>
+    <!-- Layout when Plan is Generated: Two-Column Dashboard -->
+    <div class="row g-4 mt-1">
+        <!-- Left Side: Control Form (Sticky & Compact) -->
+        <div class="col-12 col-lg-4">
+            <div class="card shadow-sm border-0 sticky-lg-top rounded-4" style="top: 6.5rem; z-index: 10;">
+                <div class="card-body p-4">
+                    <h4 class="mb-4 fw-bold d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-sliders text-danger"></i>
+                        <span>Planner Settings</span>
+                    </h4>
+                    <form method="POST" action="/ai/plan" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="destination" class="form-label fw-semibold text-body-secondary small">Destination</label>
+                            <input type="text" name="destination" class="form-control rounded-3" required
+                                placeholder="e.g., Kashmir, Paris, Tokyo" value="<%= destination || '' %>">
+                            <div class="invalid-feedback">Please enter a destination.</div>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="source" class="form-label fw-semibold text-body-secondary small">Starting From (Source)</label>
+                            <input type="text" name="source" class="form-control rounded-3" required placeholder="e.g., Delhi, Mumbai"
+                                value="<%= source || '' %>">
+                            <div class="invalid-feedback">Please enter starting location.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="transport" class="form-label fw-semibold text-body-secondary small">Transport Mode</label>
+                            <select name="transport" class="form-select rounded-3" required>
+                                <option value="Any (Best Option)" <%= transport === 'Any (Best Option)' ? 'selected' : '' %>>Any (Best Option)</option>
+                                <option value="Train 🚂" <%= transport === 'Train 🚂' ? 'selected' : '' %>>Train 🚂</option>
+                                <option value="Bus 🚌" <%= transport === 'Bus 🚌' ? 'selected' : '' %>>Bus 🚌</option>
+                                <option value="Car/Taxi 🚖" <%= transport === 'Car/Taxi 🚖' ? 'selected' : '' %>>Car/Taxi 🚖</option>
+                                <option value="Bike 🏍️" <%= transport === 'Bike 🏍️' ? 'selected' : '' %>>Bike 🏍️</option>
+                                <option value="Flight ✈️" <%= transport === 'Flight ✈️' ? 'selected' : '' %>>Flight ✈️</option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="mb-3 col-6">
+                                <label for="days" class="form-label fw-semibold text-body-secondary small">Days</label>
+                                <input type="number" name="days" class="form-control rounded-3" required min="1" max="30" value="<%= days %>">
+                                <div class="invalid-feedback">1-30 days.</div>
+                            </div>
+                            <div class="mb-3 col-6">
+                                <label for="budget" class="form-label fw-semibold text-body-secondary small">Budget</label>
+                                <select name="budget" class="form-select rounded-3" required style="font-size: 0.85rem; padding-right: 1.5rem;">
+                                    <option value="₹500 - ₹2,000 (Day Trip/Pocket Friendly)" <%= budget === '₹500 - ₹2,000 (Day Trip/Pocket Friendly)' ? 'selected' : '' %>>₹500 - ₹2k</option>
+                                    <option value="₹2,000 - ₹5,000 (Budget Stay)" <%= budget === '₹2,000 - ₹5,000 (Budget Stay)' ? 'selected' : '' %>>₹2k - ₹5k</option>
+                                    <option value="₹5,000 - ₹10,000 (Standard)" <%= budget === '₹5,000 - ₹10,000 (Standard)' ? 'selected' : '' %>>₹5k - ₹10k</option>
+                                    <option value="₹10,000 - ₹20,000 (Comfort)" <%= budget === '₹10,000 - ₹20,000 (Comfort)' ? 'selected' : '' %>>₹10k - ₹20k</option>
+                                    <option value="₹20,000 - ₹50,000 (Premium)" <%= budget === '₹20,000 - ₹50,000 (Premium)' ? 'selected' : '' %>>₹20k - ₹50k</option>
+                                    <option value="₹50,000 - ₹1,00,000 (Luxury)" <%= budget === '₹50,000 - ₹1,00,000 (Luxury)' ? 'selected' : '' %>>₹50k - ₹100k</option>
+                                    <option value="₹1,00,000+ (Ultra Luxury)" <%= budget === '₹1,00,000+ (Ultra Luxury)' ? 'selected' : '' %>>₹100k+</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="interests" class="form-label fw-semibold text-body-secondary small">Interests</label>
+                            <input type="text" name="interests" class="form-control rounded-3" required
+                                placeholder="e.g., Adventure, Local Food" value="<%= interests %>">
+                            <div class="invalid-feedback">Please enter interests.</div>
+                        </div>
+
+                        <button class="btn btn-danger w-100 py-2.5 fw-bold rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2 add-btn">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Regenerate Itinerary
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Itinerary Output (Full Wide Column) -->
+        <div class="col-12 col-lg-8">
+            <div class="card shadow-lg border-0 mb-5 rounded-4 overflow-hidden itinerary-print-card">
+                <div class="card-header border-0 py-3 px-4 d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #fe424d, #ff6b74);">
+                    <h5 class="m-0 text-white fw-bold d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-route"></i>
+                        <span>AI Travel Itinerary</span>
+                    </h5>
+                    <button class="btn btn-sm btn-light text-danger fw-bold rounded-pill px-3 shadow-sm d-flex align-items-center gap-1 hover-scale" onclick="window.print()">
+                        <i class="fa-solid fa-print"></i> Print Plan
+                    </button>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <div class="ai-response">
+                        <%- plan %>
                     </div>
                 </div>
-                <% } %>
+            </div>
         </div>
     </div>
+    
+    <% } else { %>
+    <!-- Layout when no Plan is generated: Centered Form -->
+    <div class="row justify-content-center mt-3 mb-5">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow border-0 p-4 p-md-5 rounded-4 mt-2">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 70px; height: 70px; background-color: rgba(254, 66, 77, 0.15);">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 2rem; color: #fe424d;"></i>
+                    </div>
+                    <h3 class="fw-bold">Plan Your Dream Trip with AI ✨</h3>
+                    <p class="text-muted">Enter your trip details to generate a customized, day-by-day travel plan instantly.</p>
+                </div>
+                <form method="POST" action="/ai/plan" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="destination" class="form-label fw-semibold">Where do you want to go?</label>
+                        <input type="text" name="destination" class="form-control form-control-lg rounded-3" required
+                            placeholder="e.g., Kashmir, Paris, Tokyo" value="<%= destination || '' %>">
+                        <div class="invalid-feedback">Please enter a destination.</div>
+                    </div>
 
-    <style>
-        .ai-response h1,
-        .ai-response h2,
-        .ai-response h3 {
-            color: #fe424d;
-            /* Wanderlust theme color */
-            margin-top: 1rem;
-        }
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label for="source" class="form-label fw-semibold">Starting From (Source)</label>
+                            <input type="text" name="source" class="form-control rounded-3" required placeholder="e.g., Delhi, Mumbai"
+                                value="<%= source || '' %>">
+                            <div class="invalid-feedback">Please enter starting location.</div>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="transport" class="form-label fw-semibold">Preferred Mode of Transport</label>
+                            <select name="transport" class="form-select rounded-3" required>
+                                <option value="Any (Best Option)">Any (Best Option)</option>
+                                <option value="Train 🚂">Train 🚂</option>
+                                <option value="Bus 🚌">Bus 🚌</option>
+                                <option value="Car/Taxi 🚖">Car/Taxi 🚖</option>
+                                <option value="Bike 🏍️">Bike 🏍️</option>
+                                <option value="Flight ✈️">Flight ✈️</option>
+                            </select>
+                        </div>
+                    </div>
 
-        .ai-response ul {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label for="days" class="form-label fw-semibold">Duration (Days)</label>
+                            <input type="number" name="days" class="form-control rounded-3" required min="1" max="30" value="3">
+                            <div class="invalid-feedback">Please enter duration (1-30 days).</div>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="budget" class="form-label fw-semibold">Budget (per person)</label>
+                            <select name="budget" class="form-select rounded-3" required>
+                                <option value="₹500 - ₹2,000 (Day Trip/Pocket Friendly)">₹500 - ₹2,000 (Day Trip/Pocket Friendly)</option>
+                                <option value="₹2,000 - ₹5,000 (Budget Stay)">₹2,000 - ₹5,000 (Budget Stay)</option>
+                                <option value="₹5,000 - ₹10,000 (Standard)" selected>₹5,000 - ₹10,000 (Standard)</option>
+                                <option value="₹10,000 - ₹20,000 (Comfort)">₹10,000 - ₹20,000 (Comfort)</option>
+                                <option value="₹20,000 - ₹50,000 (Premium)">₹20,000 - ₹50,000 (Premium)</option>
+                                <option value="₹50,000 - ₹1,00,000 (Luxury)">₹50,000 - ₹1,00,000 (Luxury)</option>
+                                <option value="₹1,00,000+ (Ultra Luxury)">₹1,00,000+ (Ultra Luxury)</option>
+                            </select>
+                        </div>
+                    </div>
 
-        .ai-response li {
-            margin-bottom: 5px;
-        }
+                    <div class="mb-4">
+                        <label for="interests" class="form-label fw-semibold">Interests & Preferences</label>
+                        <input type="text" name="interests" class="form-control rounded-3" required
+                            placeholder="e.g., Adventure, Local Food, Museums, Relaxing">
+                        <div class="invalid-feedback">Please share your interests.</div>
+                    </div>
 
-        /* Removed hardcoded #333 color from strong so it adapts to dark/light mode */
-        .ai-response strong {
-            font-weight: bold;
+                    <button class="btn btn-danger btn-lg w-100 fw-bold py-3 rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2 add-btn">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Itinerary
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <% } %>
+</div>
+
+<style>
+    /* AI Response Styling */
+    .ai-response {
+        font-family: "plus-jakarta-sans", sans-serif !important;
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: var(--bs-body-color);
+    }
+
+    .ai-response h1,
+    .ai-response h2,
+    .ai-response h3,
+    .ai-response h4 {
+        color: #fe424d;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        margin-top: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .ai-response h1 {
+        font-size: 1.8rem;
+        border-bottom: 2px solid rgba(254, 66, 77, 0.15);
+        padding-bottom: 0.5rem;
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .ai-response h2 {
+        font-size: 1.4rem;
+        border-left: 4px solid #fe424d;
+        padding-left: 12px;
+        margin-top: 2.2rem;
+    }
+
+    .ai-response h3 {
+        font-size: 1.2rem;
+        color: var(--bs-body-color);
+        margin-top: 1.5rem;
+        font-weight: 600;
+    }
+
+    .ai-response p {
+        margin-bottom: 1.2rem;
+    }
+
+    .ai-response strong {
+        color: var(--bs-body-color);
+        font-weight: 700;
+    }
+
+    /* Top level lists - style as separate cards */
+    .ai-response > ul {
+        list-style-type: none;
+        padding-left: 0;
+        margin-bottom: 2rem;
+    }
+
+    .ai-response > ul > li {
+        position: relative;
+        background: var(--bs-tertiary-bg);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        transition: all 0.2s ease;
+    }
+
+    .ai-response > ul > li:hover {
+        box-shadow: 0 6px 16px rgba(0,0,0,0.04);
+        border-color: rgba(254, 66, 77, 0.3);
+    }
+
+    /* Nested Lists - Tree View Timeline */
+    .ai-response ul ul {
+        list-style-type: none;
+        padding-left: 1.5rem;
+        margin-top: 0.75rem;
+        margin-bottom: 0;
+        border-left: 2px solid rgba(254, 66, 77, 0.25);
+    }
+
+    .ai-response ul ul li {
+        position: relative;
+        margin-bottom: 0.6rem;
+        padding-left: 0.5rem;
+    }
+
+    .ai-response ul ul li::before {
+        content: "➔";
+        color: #fe424d;
+        font-weight: bold;
+        font-size: 0.85rem;
+        display: inline-block;
+        width: 1.2em;
+        margin-left: -1.2em;
+    }
+
+    /* Support custom markdown tables for budgets */
+    .ai-response table {
+        width: 100%;
+        margin-top: 1.5rem;
+        margin-bottom: 2rem;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .ai-response th {
+        background-color: rgba(254, 66, 77, 0.04);
+        color: #fe424d;
+        font-weight: 700;
+        padding: 0.85rem 1.2rem;
+        border-bottom: 2px solid rgba(254, 66, 77, 0.15);
+        text-align: left;
+    }
+
+    .ai-response td {
+        padding: 0.85rem 1.2rem;
+        border-bottom: 1px solid var(--bs-border-color);
+        color: var(--bs-body-color);
+    }
+
+    .ai-response tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Hover Scale Micro-interactions */
+    .hover-scale {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-scale:hover {
+        transform: scale(1.03);
+    }
+
+    /* Print styling rules */
+    @media print {
+        .navbar, 
+        .footer, 
+        .col-lg-4, 
+        .btn, 
+        hr,
+        .f-info {
+            display: none !important;
         }
-    </style>
+        .col-lg-8 {
+            width: 100% !important;
+            float: none !important;
+        }
+        .container-fluid {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .itinerary-print-card {
+            box-shadow: none !important;
+            border: none !important;
+            background: transparent !important;
+        }
+        .card-header {
+            background: none !important;
+            border-bottom: 2px solid #fe424d !important;
+            padding: 0 0 10px 0 !important;
+        }
+        .card-header h5 {
+            color: #fe424d !important;
+        }
+        .card-body {
+            padding: 20px 0 0 0 !important;
+        }
+        .ai-response {
+            color: #000 !important;
+        }
+        .ai-response > ul > li {
+            border: 1px solid #ccc !important;
+            background: #fff !important;
+            page-break-inside: avoid;
+        }
+        .ai-response ul ul {
+            border-left-color: #999 !important;
+        }
+        .ai-response ul ul li::before {
+            color: #000 !important;
+        }
+    }
+</style>
