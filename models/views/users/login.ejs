@@ -1,30 +1,160 @@
 <% layout("/layouts/boilerplate") %>
-<div class="row mt-3 mb-2">
-    <h1 class="col-2 offset-3 mb-2">login</h1>
-    <div class="col-5 offset-3">
-        <form action="/login" method="POST" class="needs-validation" novalidate>
-              <div class="mb-3 mt-3">
-      <label for="username" class="form-label">username</label>
-      <input 
-      name="username"
-      id="username"
-       type="text" 
-       class="form-control"
-       required
-       />
-      </div>
-      
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input 
-          name="password"
-          id="password"
-           type="password" 
-           class="form-control"
-           required
-           />
-          </div>
-          <button class="btn btn-primary">login</button>
-        </form>
+
+    <style>
+        /* Premium styles for the login form */
+        .login-card {
+            border-radius: 16px;
+            border: 1px solid var(--bs-border-color);
+            background-color: var(--bs-tertiary-bg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        [data-bs-theme='dark'] .login-card {
+            background-color: #1e1e1e;
+            border-color: #2d2d2d;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .input-icon-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--bs-border-color);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            background-color: var(--bs-body-bg);
+            overflow: hidden;
+        }
+
+        .input-icon-wrapper:focus-within {
+            border-color: #fe424d;
+            box-shadow: 0 0 0 0.25rem rgba(254, 66, 77, 0.15);
+        }
+
+        .input-icon-wrapper i {
+            color: #888;
+            padding: 0 15px;
+            font-size: 0.95rem;
+        }
+
+        .input-icon-wrapper input {
+            border: none;
+            outline: none;
+            box-shadow: none;
+            background-color: transparent;
+            flex-grow: 1;
+            width: 100%;
+            padding: 14px 10px;
+            color: var(--bs-body-color);
+            font-size: 0.95rem;
+            min-width: 0;
+        }
+
+        .input-icon-wrapper input:focus {
+            box-shadow: none;
+            border: none;
+            background-color: transparent;
+        }
+
+        .eye-icon {
+            cursor: pointer;
+            padding: 0 15px;
+            color: #888;
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .eye-icon:hover {
+            color: #fe424d;
+        }
+
+        .login-btn {
+            background-color: #fe424d !important;
+            border: none !important;
+            border-radius: 10px !important;
+            padding: 12px 24px !important;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease !important;
+        }
+
+        .login-btn:hover {
+            background-color: #e03a43 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(254, 66, 77, 0.2);
+        }
+
+        .login-btn:active {
+            transform: translateY(1px);
+        }
+    </style>
+
+    <div class="row mt-5 mb-5 justify-content-center">
+        <div class="col-11 col-md-8 col-lg-6 col-xl-5 mt-4">
+            <div class="card login-card p-4 p-md-5">
+                <h1 class="fw-bold mb-0"
+                    style="font-size: 2.2rem; letter-spacing: -0.5px; color: var(--bs-body-color);">Login</h1>
+                <div
+                    style="height: 4px; width: 50px; background-color: #fe424d; margin-top: 12px; margin-bottom: 35px; border-radius: 2px;">
+                </div>
+
+                <form action="/login" method="POST" class="needs-validation" novalidate>
+                    <div class="mb-4">
+                        <label for="username" class="form-label fw-bold text-secondary"
+                            style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Username</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-regular fa-user"></i>
+                            <input name="username" id="username" type="text" placeholder="Enter your username"
+                                required />
+                        </div>
+                        <div class="invalid-feedback">Please enter your username.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-bold text-secondary"
+                            style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Password</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input name="password" id="password" type="password" placeholder="Enter your password"
+                                required />
+                            <i class="fa-solid fa-eye eye-icon" id="togglePasswordIcon"></i>
+                        </div>
+                        <div class="invalid-feedback">Please enter your password.</div>
+                    </div>
+
+                    <button class="btn btn-primary login-btn w-100 mt-2">Login</button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <span class="text-secondary small">Don't have an account?</span>
+                    <a href="/signup" class="small fw-bold text-decoration-none ms-1" style="color: #fe424d;">Sign
+                        Up</a>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+
+    <script>
+        const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+        const passwordInput = document.getElementById('password');
+
+        if (togglePasswordIcon) {
+            togglePasswordIcon.addEventListener('click', function () {
+                // Toggle the type attribute
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+
+                // Toggle the eye / eye slash icon
+                if (type === 'password') {
+                    togglePasswordIcon.classList.remove('fa-eye-slash');
+                    togglePasswordIcon.classList.add('fa-eye');
+                } else {
+                    togglePasswordIcon.classList.remove('fa-eye');
+                    togglePasswordIcon.classList.add('fa-eye-slash');
+                }
+            });
+        }
+    </script>
