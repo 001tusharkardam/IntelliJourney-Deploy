@@ -5,9 +5,19 @@ const {ListingSchema, reviewSchema } = require("./schema.js");
 const review = require("./models/review");
 
 module.exports.isLoggedIn = (req,res,next) => {
-      if(!req.isAuthenticated()){
-        req.session.redirectUrl = req.originalUrl;
-    req.flash("error","You must be logged in to create listing!");
+  if(!req.isAuthenticated()){
+    req.session.redirectUrl = req.originalUrl;
+    
+    let message = "You must be logged in!";
+    if (req.originalUrl.includes("/ai/plan")) {
+        message = "You must be logged in to plan your trip with AI!";
+    } else if (req.originalUrl.includes("/reviews")) {
+        message = "You must be logged in to manage reviews!";
+    } else if (req.originalUrl.includes("/listings")) {
+        message = "You must be logged in to manage listings!";
+    }
+    
+    req.flash("error", message);
     return res.redirect("/login");
   }
   next();
