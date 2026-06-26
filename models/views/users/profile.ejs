@@ -1,0 +1,249 @@
+<% layout("/layouts/boilerplate") %>
+
+<style>
+  .profile-container {
+    margin-top: 2.5rem;
+    margin-bottom: 4rem;
+  }
+  .profile-card {
+    border-radius: 16px;
+    border: 1px solid var(--bs-border-color);
+    background-color: var(--bs-tertiary-bg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    padding: 2.5rem;
+    transition: all 0.3s ease;
+  }
+  [data-bs-theme='dark'] .profile-card {
+    background-color: #1e1e1e;
+    border-color: #2d2d2d;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+  .profile-avatar-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 1.5rem;
+  }
+  .profile-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #fe424d;
+    box-shadow: 0 4px 15px rgba(254, 66, 77, 0.25);
+  }
+  .profile-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #fe424d;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 4px solid #fe424d;
+    box-shadow: 0 4px 15px rgba(254, 66, 77, 0.25);
+  }
+  .form-control-profile {
+    border-radius: 10px;
+    padding: 12px 16px;
+    border: 1px solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    transition: all 0.2s ease;
+  }
+  .form-control-profile:focus {
+    border-color: #fe424d;
+    box-shadow: 0 0 0 0.25rem rgba(254, 66, 77, 0.15);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+  }
+  .save-btn {
+    background-color: #fe424d !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 12px 24px !important;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s ease !important;
+  }
+  .save-btn:hover {
+    background-color: #e03a43 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(254, 66, 77, 0.2);
+  }
+  .save-btn:active {
+    transform: translateY(1px);
+  }
+  .upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    cursor: pointer;
+    width: 100%;
+  }
+  .btn-upload {
+    border: 1px dashed #fe424d;
+    color: #fe424d;
+    background-color: transparent;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .btn-upload:hover {
+    background-color: rgba(254, 66, 77, 0.05);
+    border-color: #e03a43;
+    color: #e03a43;
+  }
+  .upload-btn-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .file-name-preview {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 5px;
+    text-align: center;
+    display: block;
+    word-break: break-all;
+  }
+</style>
+
+<div class="container profile-container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <div class="card profile-card">
+        <div class="row g-5">
+          <!-- Left Column: Avatar & User identity -->
+          <div class="col-12 col-md-4 text-center d-flex flex-column justify-content-center border-end border-md-0 border-light-subtle pb-4 pb-md-0">
+            <div class="profile-avatar-container">
+              <% if(currUser.profileImage && currUser.profileImage.url) { %>
+                <img src="<%= currUser.profileImage.url %>" alt="Profile Picture" class="profile-avatar" id="avatarPreview">
+              <% } else { %>
+                <div class="profile-avatar-placeholder" id="avatarInitials">
+                  <%= currUser.username.charAt(0) %>
+                </div>
+              <% } %>
+            </div>
+            
+            <h4 class="fw-bold mb-1 text-body text-truncate text-capitalize">
+              <% if(currUser.firstName) { %>
+                <%= currUser.firstName %> <%= currUser.lastName %>
+              <% } else { %>
+                <%= currUser.username %>
+              <% } %>
+            </h4>
+            <p class="text-secondary small mb-3">@<%= currUser.username %></p>
+            
+            <div class="mt-2 text-start px-2 py-3 rounded bg-body-tertiary">
+              <div class="small mb-1 text-secondary text-uppercase fw-semibold" style="letter-spacing: 0.5px; font-size: 0.75rem;">Account Joined</div>
+              <div class="small fw-semibold text-body">
+                <%= new Date(currUser.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Profile Form Details -->
+          <div class="col-12 col-md-8">
+            <h2 class="fw-bold mb-1">Edit Profile</h2>
+            <p class="text-secondary mb-4">Update your user details and profile picture.</p>
+            
+            <form action="/profile" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="firstName" class="form-label fw-bold text-secondary small text-uppercase" style="letter-spacing: 0.5px;">First Name</label>
+                  <input type="text" name="firstName" id="firstName" class="form-control form-control-profile" placeholder="Enter first name" value="<%= currUser.firstName || '' %>" required>
+                  <div class="invalid-feedback">Please enter your first name.</div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                  <label for="lastName" class="form-label fw-bold text-secondary small text-uppercase" style="letter-spacing: 0.5px;">Last Name</label>
+                  <input type="text" name="lastName" id="lastName" class="form-control form-control-profile" placeholder="Enter last name" value="<%= currUser.lastName || '' %>" required>
+                  <div class="invalid-feedback">Please enter your last name.</div>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="email" class="form-label fw-bold text-secondary small text-uppercase" style="letter-spacing: 0.5px;">Email Address</label>
+                <input type="email" name="email" id="email" class="form-control form-control-profile" placeholder="Enter email address" value="<%= currUser.email || '' %>" required>
+                <div class="invalid-feedback">Please enter a valid email address.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="mobile" class="form-label fw-bold text-secondary small text-uppercase" style="letter-spacing: 0.5px;">Mobile Number</label>
+                <input type="tel" name="mobile" id="mobile" class="form-control form-control-profile" placeholder="Enter mobile number" value="<%= currUser.mobile || '' %>" required pattern="[0-9]{10}">
+                <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label fw-bold text-secondary small text-uppercase" style="letter-spacing: 0.5px;">Profile Image</label>
+                <div class="upload-btn-wrapper">
+                  <button type="button" class="btn-upload">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Select New Image
+                  </button>
+                  <input type="file" name="profileImage" id="profileImageInput" accept="image/png, image/jpeg, image/jpg">
+                </div>
+                <span class="file-name-preview" id="fileNamePreview">No file chosen</span>
+              </div>
+
+              <button type="submit" class="btn btn-primary save-btn w-100">Save Changes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fileInput = document.getElementById('profileImageInput');
+  const fileNamePreview = document.getElementById('fileNamePreview');
+  
+  if (fileInput) {
+    fileInput.addEventListener('change', function() {
+      if (this.files && this.files.length > 0) {
+        fileNamePreview.textContent = this.files[0].name;
+        
+        // Show local preview of avatar
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          let previewElement = document.getElementById('avatarPreview');
+          if (!previewElement) {
+            // Replace initials with image element
+            const initialsElement = document.getElementById('avatarInitials');
+            if (initialsElement) {
+              const img = document.createElement('img');
+              img.id = 'avatarPreview';
+              img.alt = 'Profile Picture';
+              img.className = 'profile-avatar';
+              initialsElement.parentNode.appendChild(img);
+              initialsElement.remove();
+              previewElement = img;
+            }
+          }
+          if (previewElement) {
+            previewElement.src = e.target.result;
+          }
+        };
+        reader.readAsDataURL(this.files[0]);
+      } else {
+        fileNamePreview.textContent = 'No file chosen';
+      }
+    });
+  }
+</script>
