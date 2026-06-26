@@ -42,3 +42,32 @@ module.exports.logout = (req,res,next) =>{
         res.redirect("/listings");
     }) ;
 }
+
+module.exports.renderProfileForm = async (req, res) => {
+    res.render("users/profile.ejs");
+};
+
+module.exports.updateProfile = async (req, res) => {
+    const { firstName, lastName, mobile, email } = req.body;
+    const user = await User.findById(req.user._id);
+    if (!user) {
+        req.flash("error", "User not found.");
+        return res.redirect("/listings");
+    }
+
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.mobile = mobile;
+    user.email = email;
+
+    if (req.file) {
+        user.profileImage = {
+            url: req.file.path,
+            filename: req.file.filename
+        };
+    }
+
+    await user.save();
+    req.flash("success", "Profile updated successfully!");
+    res.redirect("/profile");
+};
